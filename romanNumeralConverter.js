@@ -1,31 +1,30 @@
 const numerals = {
-	1000: 'M',
-	900: 'CM',
-	500: 'D',
-	400: 'CD',
-	100: 'C',
-	90: 'XC',
-	50: 'L',
-	40: 'XL',
-	10: 'X',
-	9: 'IX',
-	5: 'V',
-	4: 'IV',
-	1: 'I',
+	M: 1000,
+	CM: 900,
+	D: 500,
+	CD: 400,
+	C: 100,
+	XC: 90,
+	L: 50,
+	XL: 40,
+	X: 10,
+	IX: 9,
+	V: 5,
+	IV: 4,
+	I: 1,
 }
 
 function convertToRoman(num) {
-	let str = ''
-	let n = num / 10
+	let romanConverted = ''
 
-	if (n > 10) {
-		x = Math.trunc(num / 1000)
-		for (let i = 1; i <= x; i++) {
-			str += numerals[1000]
+	for (i in numerals) {
+		while (num >= numerals[i]) {
+			romanConverted += i
+			num -= numerals[i]
 		}
 	}
 
-	return str
+	return romanConverted
 }
 
-console.log(convertToRoman(4999))
+convertToRoman(2)
