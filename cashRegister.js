@@ -11,10 +11,11 @@ const currencyValues = {
 }
 
 function checkCashRegister(price, cash, cid) {
-	let change = Number((cash - price).toFixed(2))
-	let totalCashInDrawer = Number(
-		cid.reduce((sum, item) => sum + item[1], 0).toFixed(2)
-	)
+	let change = Math.round((cash - price) * 100) / 100
+	let totalCashInDrawer =
+		Math.round(cid.reduce((sum, item) => sum + item[1], 0) * 100) / 100
+
+	let arrayOfChange = []
 
 	if (totalCashInDrawer === change) {
 		return { status: 'CLOSED', change: cid }
@@ -23,29 +24,29 @@ function checkCashRegister(price, cash, cid) {
 		return { status: 'INSUFFICIENT_FUNDS', change: [] }
 	} else {
 		// Caso tenha troco suficiente
-		let changeArray = []
 		cid.reverse().forEach((item) => {
 			const coinName = item[0]
-			const coinTotalValueInDollars = Number(item[1])
-			const selectedCurrency = Number(currencyValues[coinName])
-			let coinsAvailable = Number(
-				(coinTotalValueInDollars / selectedCurrency).toFixed(2)
-			)
-			let coinsToReturn = 0
+			const coinTotalValueInDollars = Math.round(item[1] * 100) / 100
+			const selectedCurrency =
+				Math.round(currencyValues[coinName] * 100) / 100
+			let coinsInDrawer =
+				Math.round((coinTotalValueInDollars / selectedCurrency) * 100) /
+				100
+			let coinsQuantity = 0
 
-			while (change >= selectedCurrency && coinsAvailable > 0) {
-				change = Number((change - selectedCurrency).toFixed(2))
-				--coinsAvailable
-				++coinsToReturn
+			while (change >= selectedCurrency && coinsInDrawer > 0) {
+				change = Math.round((change - selectedCurrency) * 100) / 100
+				--coinsInDrawer
+				++coinsQuantity
 			}
 
-			if (coinsToReturn > 0) {
-				changeArray.push([coinName, coinsToReturn * selectedCurrency])
+			if (coinsQuantity > 0) {
+				arrayOfChange.push([coinName, coinsQuantity * selectedCurrency])
 			}
 		})
 
 		if (change === 0) {
-			return { status: 'OPEN', change: changeArray }
+			return { status: 'OPEN', change: arrayOfChange }
 		} else {
 			return { status: 'INSUFFICIENT_FUNDS', change: [] }
 		}

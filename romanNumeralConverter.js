@@ -27,4 +27,4 @@ function convertToRoman(num) {
 	return romanConverted
 }
 
-convertToRoman(2)
+console.log(convertToRoman(2))
