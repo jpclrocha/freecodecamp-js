@@ -1,9 +1,3 @@
-// Return {status: "INSUFFICIENT_FUNDS", change: []} if cash-in-drawer is less than the change due, or if you cannot return the exact change.
-
-// Return {status: "CLOSED", change: [...]} with cash-in-drawer as the value for the key change if it is equal to the change due.
-
-// Otherwise, return {status: "OPEN", change: [...]}, with the change due in coins and bills, sorted in highest to lowest order, as the value of the change key.
-
 const currencyValues = {
 	PENNY: 0.01,
 	NICKEL: 0.05,
@@ -13,45 +7,61 @@ const currencyValues = {
 	FIVE: 5,
 	TEN: 10,
 	TWENTY: 20,
-	HUNDRED: 100,
+	'ONE HUNDRED': 100,
 }
 
 function checkCashRegister(price, cash, cid) {
-	let change = cash - price
-	let totalCashInDrawer = 0
+	let change = Number((cash - price).toFixed(2))
+	let totalCashInDrawer = Number(
+		cid.reduce((sum, item) => sum + item[1], 0).toFixed(2)
+	)
 
-	let drawer = cid.map((item) => {
-		totalCashInDrawer += item[1]
-		return [item[0], Math.ceil(item[1] / currencyValues[item[0]])]
-	})
-
-	console.log('Cash in draw: ' + totalCashInDrawer)
-	console.log('Change: ' + change)
-
-	// falta a parte de se nao tiver o troco exato
-	if (totalCashInDrawer < change) {
-		return { status: 'INSUFFICIENT_FUNDS', change: [] }
-	}
-	// Caso o valor de troco seja o mesmo do que tem no caixa
-	else if (totalCashInDrawer === change) {
+	if (totalCashInDrawer === change) {
 		return { status: 'CLOSED', change: cid }
-	}
-	// Caso tenha troco suficiente
-	else if (totalCashInDrawer > change) {
-		return { status: 'OPEN', change: [] }
+	} else if (totalCashInDrawer < change) {
+		// Caso o valor de troco seja o mesmo do que tem no caixa
+		return { status: 'INSUFFICIENT_FUNDS', change: [] }
+	} else {
+		// Caso tenha troco suficiente
+		let changeArray = []
+		cid.reverse().forEach((item) => {
+			const coinName = item[0]
+			const coinTotalValueInDollars = Number(item[1])
+			const selectedCurrency = Number(currencyValues[coinName])
+			let coinsAvailable = Number(
+				(coinTotalValueInDollars / selectedCurrency).toFixed(2)
+			)
+			let coinsToReturn = 0
+
+			while (change >= selectedCurrency && coinsAvailable > 0) {
+				change = Number((change - selectedCurrency).toFixed(2))
+				--coinsAvailable
+				++coinsToReturn
+			}
+
+			if (coinsToReturn > 0) {
+				changeArray.push([coinName, coinsToReturn * selectedCurrency])
+			}
+		})
+
+		if (change === 0) {
+			return { status: 'OPEN', change: changeArray }
+		} else {
+			return { status: 'INSUFFICIENT_FUNDS', change: [] }
+		}
 	}
 }
 
 console.log(
-	checkCashRegister(19.5, 20, [
-		['PENNY', 0.01],
-		['NICKEL', 0],
-		['DIME', 0],
-		['QUARTER', 0],
-		['ONE', 0],
-		['FIVE', 0],
-		['TEN', 0],
-		['TWENTY', 0],
-		['ONE HUNDRED', 0],
+	checkCashRegister(3.26, 100, [
+		['PENNY', 1.01],
+		['NICKEL', 2.05],
+		['DIME', 3.1],
+		['QUARTER', 4.25],
+		['ONE', 90],
+		['FIVE', 55],
+		['TEN', 20],
+		['TWENTY', 60],
+		['ONE HUNDRED', 100],
 	])
 )
