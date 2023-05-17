@@ -21,7 +21,7 @@ function checkCashRegister(price, cash, cid) {
 	let totalCashInDrawer = 0
 
 	let drawer = cid.map((item) => {
-		totalCashInDrawer += Math.ceil(item[1])
+		totalCashInDrawer += item[1]
 		return [item[0], Math.ceil(item[1] / currencyValues[item[0]])]
 	})
 
@@ -44,14 +44,14 @@ function checkCashRegister(price, cash, cid) {
 
 console.log(
 	checkCashRegister(19.5, 20, [
-		['PENNY', 1.01],
-		['NICKEL', 2.05],
-		['DIME', 3.1],
-		['QUARTER', 4.25],
-		['ONE', 90],
-		['FIVE', 55],
-		['TEN', 20],
-		['TWENTY', 60],
-		['HUNDRED', 100],
+		['PENNY', 0.01],
+		['NICKEL', 0],
+		['DIME', 0],
+		['QUARTER', 0],
+		['ONE', 0],
+		['FIVE', 0],
+		['TEN', 0],
+		['TWENTY', 0],
+		['ONE HUNDRED', 0],
 	])
 )
